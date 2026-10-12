@@ -1,0 +1,180 @@
+/* ---------- Hero background image + fade into page background ---------- */
+#hero {
+  position: relative; /* no z-index here on purpose, so .hero-bg can sit BEHIND the 3D canvas */
+  height: auto;
+  min-height: 100vh;
+  padding-top: 5.5rem; /* keeps content clear of the navbar */
+  padding-bottom: 2rem;
+}
+
+.hero-bg {
+  position: absolute;
+  inset: 0;
+  z-index: -2; /* canvas is -1, so the rocket renders on top of the image */
+  /* the image itself is set from heroCarousel.js so Vite tells you loudly if the file is missing */
+  background: center / cover no-repeat;
+  background-color: #1a1a1a; /* shows only if the image fails to load */
+  opacity: 1; /* IMAGE TRANSPARENCY: 1 = solid, 0.5 = half see-through, 0 = invisible. Change me! */
+  transition: opacity 0.6s ease; /* smooth cross-fade when you switch theme */
+  /* fade the bottom of the image into var(--bg) */
+  -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 60%, transparent 100%);
+  mask-image: linear-gradient(to bottom, #000 0%, #000 60%, transparent 100%);
+}
+
+/* slight dark tint so text stays readable on any image */
+.hero-bg::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.25);
+}
+
+/* ---------- Light theme background (WhiteHomePageBG) ---------- */
+.hero-bg-light {
+  opacity: 0; /* hidden while the theme is dark */
+}
+
+.hero-bg-light::after {
+  background: transparent; /* no dark tint on the white image */
+}
+
+/* when the theme is light: hide the dark image, show the white one */
+[data-theme="light"] .hero-bg.has-light-pair {
+  opacity: 0;
+}
+
+[data-theme="light"] .hero-bg.hero-bg-light {
+  opacity: 0.5; /* LIGHT-THEME IMAGE TRANSPARENCY: change me separately from the dark one */
+}
+
+/* ---------- Carousel ---------- */
+.hero-carousel {
+  width: 100%;
+  max-width: 1100px;
+  margin-top: 1.5rem;
+  --card-h: clamp(280px, 48vh, 500px); /* change this one number to resize every card */
+  touch-action: pan-y; /* vertical page scroll still works on touch */
+  user-select: none;
+  -webkit-user-select: none;
+  cursor: grab;
+}
+
+.hero-carousel.dragging {
+  cursor: grabbing;
+}
+
+.hero-stage {
+  position: relative;
+  height: var(--card-h);
+}
+
+.hero-card {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  height: var(--card-h);
+  width: calc(var(--card-h) * 9 / 16); /* 9:16 portrait */
+  border-radius: 14px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+  will-change: transform, opacity;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  text-align: left;
+}
+
+.hero-card.active {
+  border-color: var(--accent);
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.5);
+}
+
+.hero-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  -webkit-user-drag: none;
+  pointer-events: none;
+}
+
+.hero-card-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 3rem;
+  font-weight: 600;
+  opacity: 0.35;
+}
+
+.hero-card-caption {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 1.2rem 1rem 0.7rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #fff;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.7), transparent);
+}
+
+/* ---------- Arrows (appear on hover) ---------- */
+.hero-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 200;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  background: rgba(17, 17, 17, 0.45);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  color: #fff;
+  font-size: 1.6rem;
+  line-height: 1;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.25s ease, background 0.2s ease, border-color 0.2s ease;
+}
+
+.hero-arrow.prev { left: 0; }
+.hero-arrow.next { right: 0; }
+
+.hero-carousel:hover .hero-arrow { opacity: 1; }
+.hero-arrow:hover { background: rgba(17, 17, 17, 0.8); border-color: var(--accent); }
+.hero-arrow:disabled { opacity: 0 !important; pointer-events: none; }
+
+/* touch devices have no hover, so keep arrows visible but subtle */
+@media (hover: none) {
+  .hero-arrow { opacity: 0.7; width: 36px; height: 36px; }
+}
+
+/* ---------- Dots ---------- */
+.hero-dots {
+  display: flex;
+  justify-content: center;
+  gap: 0.6rem;
+  margin-top: 1rem;
+}
+
+.hero-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  border: none;
+  padding: 0;
+  background: rgba(255, 255, 255, 0.4);
+  cursor: pointer;
+  transition: width 0.3s ease, background 0.3s ease;
+}
+
+.hero-dot.active {
+  width: 24px;
+  background: var(--accent);
+}

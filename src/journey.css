@@ -1,0 +1,233 @@
+/* ---------- Section ---------- */
+.panel-journey {
+  height: auto;
+  min-height: 80vh;
+  padding: 6rem 0 3rem;
+}
+
+.journey-head {
+  text-align: center;
+  padding: 0 5vw;
+  margin-bottom: 0.5rem;
+}
+
+.journey-head p {
+  margin: 0.6rem auto 0;
+  opacity: 0.75;
+}
+
+.journey-hint {
+  font-size: 0.8rem;
+  opacity: 0.5;
+  margin-top: 0.5rem;
+}
+
+/* ---------- Horizontal scroll area (scrollbar hidden, edges fade out) ---------- */
+.journey-scroll {
+  width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 3rem 0;
+  cursor: grab;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  -webkit-mask-image: linear-gradient(to right, transparent 0, #000 48px, #000 calc(100% - 48px), transparent 100%);
+  mask-image: linear-gradient(to right, transparent 0, #000 48px, #000 calc(100% - 48px), transparent 100%);
+}
+
+.journey-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.journey-scroll.dragging {
+  cursor: grabbing;
+}
+
+.journey-track {
+  position: relative;
+  margin: 0 auto; /* centered when it is narrower than the screen */
+}
+
+/* ---------- Lines ---------- */
+.j-lines {
+  position: absolute;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  overflow: visible;
+}
+
+.j-line {
+  fill: none;
+  stroke-width: 2.5;
+  stroke-opacity: 0.9;
+  stroke-dasharray: 1 1;
+  stroke-dashoffset: 1;
+  transition: stroke-dashoffset 0.6s ease;
+}
+
+.journey-track.visible .j-line {
+  stroke-dashoffset: 0;
+}
+
+.j-pin {
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.journey-track.visible .j-pin {
+  opacity: 1;
+}
+
+/* ---------- Nodes (appear one after another) ---------- */
+.j-node {
+  position: absolute;
+  width: var(--node-w, 260px);
+  text-align: center;
+  cursor: pointer;
+  outline: none;
+  opacity: 0;
+  transform: translateY(26px);
+  transition: opacity 0.6s ease, transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+  transition-delay: calc(var(--i) * 0.18s);
+}
+
+.journey-track.visible .j-node {
+  opacity: 1;
+  transform: none;
+}
+
+.j-node:focus-visible {
+  outline: 2px solid var(--c);
+  outline-offset: 8px;
+  border-radius: 16px;
+}
+
+.j-date {
+  display: block;
+  font-size: 0.75rem;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  opacity: 0.6;
+}
+
+/* ---------- Photo card ---------- */
+.j-card .j-date {
+  margin-bottom: 0.5rem;
+}
+
+.j-card-box {
+  text-align: left;
+  border-radius: 16px;
+  overflow: hidden;
+  background: var(--card-bg, rgba(28, 28, 28, 0.78));
+  border: 1px solid var(--card-border, rgba(255, 255, 255, 0.1));
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+  transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.4s ease, border-color 0.3s ease;
+}
+
+.j-card:hover .j-card-box,
+.j-card:focus-visible .j-card-box {
+  transform: translateY(-8px) scale(1.04);
+  border-color: var(--c);
+  box-shadow:
+    0 25px 50px rgba(0, 0, 0, 0.5),
+    0 0 40px color-mix(in srgb, var(--c) 45%, transparent);
+}
+
+.j-card-img {
+  aspect-ratio: 16 / 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background: color-mix(in srgb, var(--c) 35%, #111);
+}
+
+.j-card-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  pointer-events: none;
+  -webkit-user-drag: none;
+  transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.j-card:hover .j-card-img img {
+  transform: scale(1.1);
+}
+
+.j-card-letter {
+  font-size: 2.5rem;
+  font-weight: 600;
+  opacity: 0.4;
+  color: #fff;
+}
+
+.j-card-title {
+  padding: 0.8rem 1rem;
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+/* ---------- Dot entry (circle + title + small text + date) ---------- */
+.j-circle {
+  display: block;
+  width: var(--dot, 22px);
+  height: var(--dot, 22px);
+  margin: 0 auto 0.9rem;
+  border-radius: 50%;
+  background: var(--c);
+  box-shadow:
+    0 0 0 5px color-mix(in srgb, var(--c) 28%, transparent),
+    0 0 22px color-mix(in srgb, var(--c) 60%, transparent);
+  animation: jPulse 2.6s ease-in-out infinite;
+  transition: transform 0.3s ease;
+}
+
+.j-dot:hover .j-circle,
+.j-dot:focus-visible .j-circle {
+  transform: scale(1.35);
+}
+
+@keyframes jPulse {
+  0%, 100% {
+    box-shadow:
+      0 0 0 5px color-mix(in srgb, var(--c) 28%, transparent),
+      0 0 22px color-mix(in srgb, var(--c) 60%, transparent);
+  }
+  50% {
+    box-shadow:
+      0 0 0 11px color-mix(in srgb, var(--c) 12%, transparent),
+      0 0 32px color-mix(in srgb, var(--c) 70%, transparent);
+  }
+}
+
+.j-dot h3 {
+  font-size: 1.05rem;
+  font-weight: 500;
+  margin-bottom: 0.3rem;
+  transition: color 0.3s ease;
+}
+
+.j-dot:hover h3 {
+  color: var(--c);
+}
+
+.j-dot p {
+  max-width: 100%;
+  font-size: 0.85rem;
+  font-weight: 300;
+  line-height: 1.5;
+  opacity: 0.75;
+  margin: 0 0 0.5rem;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .j-circle { animation: none; }
+}

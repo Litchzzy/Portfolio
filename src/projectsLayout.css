@@ -1,0 +1,301 @@
+/* =====================================================
+   GRID: every 3rd card is BIG (2x2) and switches sides
+   ===================================================== */
+.panel-projects {
+  padding-top: 7rem;
+}
+
+.panel-projects .projects-grid {
+  grid-template-columns: repeat(3, 1fr);
+  grid-auto-rows: 250px;
+  grid-auto-flow: dense;
+  gap: 1.2rem;
+  max-width: 1200px;
+  margin-top: 1.5rem;
+}
+
+.projects-grid .project-card.is-feature {
+  grid-column: span 2;
+  grid-row: span 2;
+}
+
+/* the big card of every second block sits on the right */
+.projects-grid .project-card.is-feature.feature-right {
+  grid-column: 2 / span 2;
+}
+
+@media (max-width: 1000px) {
+  .panel-projects .projects-grid {
+    grid-template-columns: repeat(2, 1fr);
+    grid-auto-rows: 260px;
+  }
+
+  .projects-grid .project-card.is-feature,
+  .projects-grid .project-card.is-feature.feature-right {
+    grid-column: 1 / -1;
+    grid-row: span 1;
+  }
+}
+
+@media (max-width: 620px) {
+  .panel-projects .projects-grid {
+    grid-template-columns: 1fr;
+    grid-auto-rows: 280px;
+  }
+}
+
+/* =====================================================
+   CARD: the picture fills the whole card
+   ===================================================== */
+.projects-grid .project-card {
+  border-radius: 22px;
+  color: #fff;
+  text-align: left;
+}
+
+.pc-media {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+.pc-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  pointer-events: none;
+  -webkit-user-drag: none;
+  transition: transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.project-card:hover .pc-media img {
+  transform: scale(1.1);
+}
+
+/* no picture yet: a colorful gradient in the project's color with a big letter */
+.pc-placeholder {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: clamp(4rem, 10vw, 7rem);
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.2);
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--card-color) 70%, #000),
+    color-mix(in srgb, var(--card-color) 22%, #000)
+  );
+  transition: transform 0.7s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.project-card:hover .pc-placeholder {
+  transform: scale(1.18) rotate(-4deg);
+}
+
+/* dark fade so the text is always readable */
+.pc-shade {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.88) 0%, rgba(0, 0, 0, 0.4) 45%, transparent 78%);
+  transition: opacity 0.4s ease;
+}
+
+.pc-index {
+  position: absolute;
+  top: 1.1rem;
+  left: 1.3rem;
+  z-index: 4;
+  font-size: 0.8rem;
+  font-weight: 500;
+  letter-spacing: 2px;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.pc-arrow {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  z-index: 4;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 1.1rem;
+  background: rgba(255, 255, 255, 0.16);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  opacity: 0;
+  transform: translate(-8px, 8px);
+  transition: opacity 0.35s ease, transform 0.35s ease, background 0.3s ease;
+}
+
+.project-card:hover .pc-arrow {
+  opacity: 1;
+  transform: none;
+  background: var(--card-color, var(--accent));
+}
+
+/* ---------- Text at the bottom ---------- */
+.pc-body {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 4;
+  padding: 1.4rem 1.5rem;
+}
+
+.pc-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-bottom: 0.6rem;
+}
+
+.pc-tag {
+  font-size: 0.72rem;
+  padding: 0.2rem 0.65rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.16);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  transition: background 0.3s ease;
+}
+
+.project-card:hover .pc-tag {
+  background: color-mix(in srgb, var(--card-color, var(--accent)) 55%, transparent);
+}
+
+.pc-body h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  line-height: 1.2;
+  transition: transform 0.35s ease;
+}
+
+.project-card:hover .pc-body h3 {
+  transform: translateY(-2px);
+}
+
+/* description + link slide open on hover (always open on the big card) */
+.pc-more {
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition: max-height 0.5s ease, opacity 0.4s ease, margin-top 0.4s ease;
+}
+
+.project-card:hover .pc-more,
+.project-card:focus-visible .pc-more {
+  max-height: 9em;
+  opacity: 1;
+  margin-top: 0.5rem;
+}
+
+.pc-more p {
+  max-width: 100%;
+  font-size: 0.88rem;
+  font-weight: 300;
+  line-height: 1.5;
+  opacity: 0.9;
+  margin: 0 0 0.6rem;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.pc-more .project-link {
+  color: #fff;
+  font-weight: 500;
+}
+
+/* ---------- The big card ---------- */
+.project-card.is-feature .pc-body {
+  padding: 2rem 2.2rem;
+}
+
+.project-card.is-feature .pc-body h3 {
+  font-size: clamp(1.6rem, 3vw, 2.3rem);
+}
+
+.project-card.is-feature .pc-more {
+  max-height: 9em;
+  opacity: 1;
+  margin-top: 0.7rem;
+}
+
+.project-card.is-feature .pc-more p {
+  font-size: 1rem;
+  -webkit-line-clamp: 4;
+  max-width: 560px;
+}
+
+.project-card.is-feature .pc-index {
+  font-size: 0.9rem;
+}
+
+/* phones/tablets have no hover: always show the description */
+@media (hover: none) {
+  .pc-more {
+    max-height: 9em;
+    opacity: 1;
+    margin-top: 0.5rem;
+  }
+  .pc-arrow {
+    display: none;
+  }
+}
+
+/* =====================================================
+   FILTER CHIPS
+   ===================================================== */
+.projects-filter {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.6rem;
+  margin-top: 1.2rem;
+}
+
+.filter-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1.1rem;
+  border-radius: 999px;
+  border: 1px solid var(--card-border, rgba(255, 255, 255, 0.15));
+  background: rgba(127, 127, 127, 0.1);
+  color: var(--text);
+  font-family: inherit;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: transform 0.25s ease, border-color 0.25s ease, background 0.25s ease, color 0.25s ease;
+}
+
+.filter-chip:hover {
+  transform: translateY(-2px);
+  border-color: var(--accent);
+}
+
+.filter-chip.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #111;
+  font-weight: 500;
+}
+
+.chip-count {
+  font-size: 0.7rem;
+  padding: 0.05rem 0.45rem;
+  border-radius: 999px;
+  background: rgba(127, 127, 127, 0.25);
+}
+
+.filter-chip.active .chip-count {
+  background: rgba(0, 0, 0, 0.18);
+}

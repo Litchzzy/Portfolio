@@ -1,0 +1,26 @@
+import './style.css';
+import { startRenderLoop } from './three/scene.js';
+import { initHeroTimeline } from './three/heroTimeline.js';
+import { renderProjects } from './components/projects.js';
+import { initScrollAnimations } from './animations/scrollAnimations.js';
+import { initNavbar } from './components/navbar.js';
+import { initTheme } from './components/theme.js';
+import './hero.css';
+import { initHeroCarousel } from './components/heroCarousel.js';
+import './about.css';
+import { initAbout } from './components/about.js';
+import { initContact } from './components/contact.js';
+import { initEffects } from './components/effects.js';
+import { initJourney } from './components/journey.js';
+
+startRenderLoop();
+initHeroTimeline();
+renderProjects();
+initScrollAnimations();
+initNavbar();
+initAbout();
+initContact();
+initEffects();
+initJourney();
+initHeroCarousel();
+initTheme();

@@ -1,0 +1,127 @@
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+<body>
+  <nav id="navbar">
+    <a href="#hero" class="nav-logo" id="navLogo">
+      <img class="logo-dark" src="/src/data/Images/Logo.png" alt="Locth logo" />
+      <img class="logo-light" src="/src/data/Images/LogoLight.png" alt="Locth logo" onerror="this.remove()" />
+    </a>
+
+    <div class="nav-links">
+      <a href="#hero" class="nav-link" data-section="hero">Home</a>
+      <span class="nav-divider"></span>
+      <a href="#about" class="nav-link" data-section="about">About</a>
+      <span class="nav-divider"></span>
+      <a href="#journey" class="nav-link" data-section="journey">Journey</a>
+      <span class="nav-divider"></span>
+      <a href="#projects" class="nav-link" data-section="projects">Project</a>
+      <span class="nav-divider"></span>
+      <a href="#contact" class="nav-link" data-section="contact">Contact</a>
+    </div>
+
+    <button class="hamburger" id="hamburger" aria-label="Open menu">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+
+  <div class="side-menu" id="sideMenu">
+    <div class="side-menu-links">
+      <a href="#hero" class="side-link" data-section="hero">Home</a>
+      <span class="side-divider"></span>
+      <a href="#about" class="side-link" data-section="about">About</a>
+      <span class="side-divider"></span>
+      <a href="#journey" class="side-link" data-section="journey">Journey</a>
+      <span class="side-divider"></span>
+      <a href="#projects" class="side-link" data-section="projects">Project</a>
+      <span class="side-divider"></span>
+      <a href="#contact" class="side-link" data-section="contact">Contact</a>
+    </div>
+
+    <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark/light mode">
+      <span class="theme-icon">🌙</span>
+    </button>
+  </div>
+
+  <canvas id="webgl"></canvas>
+
+  <div id="app">
+    <section class="panel" id="hero">
+      <div class="hero-bg"></div>
+      <h1>Locth</h1>
+      <p>Everything starts from a single idea</p>
+      <div class="hero-carousel" id="heroCarousel"></div>
+    </section>
+<section class="panel panel-about" id="about">
+  <div class="ab-wrap" id="aboutRoot"></div>
+</section>
+<section class="panel panel-journey" id="journey">
+  <div class="journey-head">
+    <h2>Journey</h2>
+    <p>The steps that brought me here</p>
+  </div>
+  <div class="journey-scroll" id="journeyScroll">
+    <div class="journey-track" id="journeyTrack"></div>
+  </div>
+  <span class="journey-hint">Drag to explore</span>
+</section>
+    <section class="panel panel-projects" id="projects">
+      <h2>Projects</h2>
+      <div class="projects-grid" id="projectsGrid"></div>
+    </section>
+    <section class="panel panel-contact" id="contact">
+  <div class="contact-card">
+
+    <div class="contact-left">
+      <span class="contact-kicker">Contact</span>
+      <h2>Let's build something together</h2>
+      <p>Have a project, an idea, or just want to say hi? Send me a message, or find me on any of these.</p>
+
+      <div class="contact-links">
+        <a class="contact-link" id="emailLink" href="#">
+          <div class="contact-icon">
+            <svg viewBox="0 0 24 24"><path d="M4 4h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          </div>
+          <div class="contact-link-text"><small>Email</small><span>your@email.com</span></div>
+        </a>
+
+        <a class="contact-link" href="https://github.com/litchzzy" target="_blank" rel="noopener">
+          <div class="contact-icon">
+            <svg viewBox="0 0 24 24"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+          </div>
+          <div class="contact-link-text"><small>GitHub</small><span>github.com/litchzzy</span></div>
+        </a>
+
+        <a class="contact-link" href="https://instagram.com/litchzzys" target="_blank" rel="noopener">
+          <div class="contact-icon">
+            <svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+          </div>
+          <div class="contact-link-text"><small>Instagram</small><span>@litchzzys</span></div>
+        </a>
+      </div>
+
+      <button class="copy-email" id="copyEmail" type="button">Copy email</button>
+    </div>
+
+    <form class="contact-form" id="contactForm">
+      <div>
+        <label for="cName">Your name</label>
+        <input id="cName" name="name" type="text" placeholder="Full Name" required />
+      </div>
+      <div>
+        <label for="cEmail">Your email</label>
+        <input id="cEmail" name="email" type="email" placeholder="your.email@example.com" required />
+      </div>
+      <div>
+        <label for="cMsg">Message</label>
+        <textarea id="cMsg" name="message" placeholder="Tell me about your idea..." required></textarea>
+      </div>
+      <button class="send-btn" type="submit">Send message</button>
+      <div class="form-status"></div>
+    </form>
+
+  </div>
+</section>
+  </div>
+
+  <script type="module" src="/src/main.js"></script>
+</body>

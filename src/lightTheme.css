@@ -1,0 +1,169 @@
+/* =====================================================
+   LIGHT THEME FIXES  (About, Journey, Projects, Contact)
+   Every rule starts with  html[data-theme="light"]  so it ALWAYS beats the
+   normal rules, no matter which css file loads first.
+   ===================================================== */
+
+/* the shared card colors (About, Journey, Contact, dots, popups use these) */
+html[data-theme="light"] {
+  --card-bg: rgba(255, 255, 255, 0.85);
+  --card-border: rgba(0, 0, 0, 0.09);
+}
+
+/* ---------- ABOUT ---------- */
+html[data-theme="light"] .ab-card {
+  background: rgba(255, 255, 255, 0.82);
+  border-color: rgba(0, 0, 0, 0.08);
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.14);
+}
+
+html[data-theme="light"] .ab-glow {
+  opacity: 0.12;
+}
+
+/* the big letter shown when there is no photo */
+html[data-theme="light"] .ab-photo-fallback {
+  background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 35%, #fff), #fff);
+  color: #111;
+  opacity: 0.55;
+}
+
+/* "Available for work" badge */
+html[data-theme="light"] .ab-badge {
+  background: rgba(255, 255, 255, 0.85);
+  color: #111;
+  border-color: rgba(0, 0, 0, 0.1);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+html[data-theme="light"] .ab-bar {
+  background: rgba(0, 0, 0, 0.1);
+}
+
+html[data-theme="light"] .ab-stat,
+html[data-theme="light"] .ab-fact {
+  background: rgba(0, 0, 0, 0.04);
+}
+
+/* the moving strip of tools under the card */
+html[data-theme="light"] .ab-tool {
+  background: rgba(255, 255, 255, 0.9);
+  border-color: rgba(0, 0, 0, 0.09);
+  color: #111;
+}
+
+/* ---------- JOURNEY ---------- */
+html[data-theme="light"] .j-card-box {
+  background: rgba(255, 255, 255, 0.92);
+  border-color: rgba(0, 0, 0, 0.08);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+}
+
+html[data-theme="light"] .j-card:hover .j-card-box,
+html[data-theme="light"] .j-card:focus-visible .j-card-box {
+  box-shadow:
+    0 25px 50px rgba(0, 0, 0, 0.2),
+    0 0 40px color-mix(in srgb, var(--c) 35%, transparent);
+}
+
+/* photo area / big letter when a card has no photo */
+html[data-theme="light"] .j-card-img {
+  background: color-mix(in srgb, var(--c) 28%, #fff);
+}
+
+html[data-theme="light"] .j-card-letter {
+  color: var(--c);
+  opacity: 0.6;
+}
+
+/* ---------- PROJECTS ---------- */
+html[data-theme="light"] .projects-grid .project-card {
+  color: #111;
+  background: rgba(255, 255, 255, 0.92);
+  border-color: rgba(0, 0, 0, 0.08);
+}
+
+/* white fade (instead of black) behind the text */
+html[data-theme="light"] .pc-shade {
+  background: linear-gradient(
+    to top,
+    rgba(255, 255, 255, 0.95) 0%,
+    rgba(255, 255, 255, 0.6) 42%,
+    transparent 75%
+  );
+}
+
+/* cards without a picture: soft tint of the project color */
+html[data-theme="light"] .pc-placeholder {
+  color: rgba(0, 0, 0, 0.14);
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--card-color) 38%, #fff),
+    color-mix(in srgb, var(--card-color) 10%, #fff)
+  );
+}
+
+html[data-theme="light"] .pc-index {
+  color: rgba(0, 0, 0, 0.6);
+}
+
+html[data-theme="light"] .pc-arrow {
+  background: rgba(0, 0, 0, 0.08);
+  color: #111;
+}
+
+html[data-theme="light"] .project-card:hover .pc-arrow {
+  background: var(--card-color, var(--accent));
+  color: #fff;
+}
+
+html[data-theme="light"] .pc-tag {
+  background: rgba(0, 0, 0, 0.08);
+  color: #111;
+}
+
+html[data-theme="light"] .project-card:hover .pc-tag {
+  background: color-mix(in srgb, var(--card-color, var(--accent)) 25%, transparent);
+}
+
+html[data-theme="light"] .pc-more .project-link {
+  color: #111;
+}
+
+/* ---------- CONTACT ---------- */
+html[data-theme="light"] .contact-card {
+  background: rgba(255, 255, 255, 0.82);
+  border-color: rgba(0, 0, 0, 0.08);
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.14);
+}
+
+/* =====================================================
+   NAVBAR LOGO: one image for dark theme, another for light theme
+   ===================================================== */
+#navLogo {
+  display: grid;
+  align-items: center;
+  justify-items: start;
+}
+
+/* both logos sit on top of each other, only one is visible at a time */
+#navLogo img {
+  grid-area: 1 / 1;
+  height: 44px; /* LOGO SIZE: change this number to make your logo bigger or smaller */
+  width: auto;
+  display: block;
+  transition: opacity 0.4s ease;
+}
+
+#navLogo .logo-light {
+  opacity: 0;
+}
+
+html[data-theme="light"] #navLogo .logo-light {
+  opacity: 1;
+}
+
+/* hide the dark-theme logo in light theme (only if the light logo file really loaded) */
+html[data-theme="light"] #navLogo:has(.logo-light) .logo-dark {
+  opacity: 0;
+}
