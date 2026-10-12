@@ -5,13 +5,37 @@ import '../journey.css';
 
 const SVG_NS = 'http://www.w3.org/2000/svg';
 
+// RANDOM LAYOUT: change this number to get a different random zigzag.
+// The same number always gives the same layout (so it does not jump around when you resize).
+const SEED = 6;
+
+// tiny seeded random generator
+function makeRandom(seed) {
+  let a = seed >>> 0;
+  return () => {
+    a = (a + 0x6d2b79f5) >>> 0;
+    let t = a;
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
 export function initJourney() {
   const scroller = document.querySelector('#journeyScroll');
   const track = document.querySelector('#journeyTrack');
   if (!scroller || !track || !journey.length) return;
 
   const count = journey.length;
-  const isCard = (i) => (journey[i].type ? journey[i].type === 'card' : i % 2 === 0);
+
+  // shape: 'Card' or 'Dot' (any capital letters). "type" still works too.
+  // If you leave both out, entries alternate card, dot, card, dot ...
+  const isCard = (i) => {
+    const shape = String(journey[i].shape || journey[i].type || '').toLowerCase();
+    if (shape === 'card') return true;
+    if (shape === 'dot') return false;
+    return i % 2 === 0;
+  };
   const firstParagraph = (text = '') => text.split(/\n+/)[0];
 
   // ---------- Lines layer ----------
@@ -56,69 +80,88 @@ export function initJourney() {
     return { el, card };
   });
 
-  // ---------- Layout: zigzag between a top row (cards) and a bottom row (dots) ----------
+  // ---------- Layout: random heights, connected by dashed lines ----------
   function layout() {
     const mobile = window.innerWidth < 768;
-    const NODE_W = mobile ? 210 : 260; // width of one card / dot
-    const STEP = mobile ? 210 : 290;   // horizontal distance from one entry to the next
-    const GAP = mobile ? 90 : 130;     // vertical distance between the two rows
-    const PAD = mobile ? 40 : 90;      // empty space at the start and the end
-    const DOT = 22;                    // circle size
+    const NODE_W = mobile ? 210 : 260;  // width of one card / dot
+    const STEP = mobile ? 210 : 290;    // horizontal distance from one entry to the next
+    const RANGE = mobile ? 170 : 230;   // how far up/down entries can wander (bigger = wilder)
+    const MIN_JUMP = mobile ? 50 : 80;  // smallest height difference between two neighbours
+    const PAD = mobile ? 40 : 90;       // empty space at the start and the end
+    const DOT = 22;                     // circle size
 
     track.style.setProperty('--node-w', `${NODE_W}px`);
     track.style.setProperty('--dot', `${DOT}px`);
 
     const heights = nodes.map((n) => n.el.offsetHeight);
-    const topH = Math.max(0, ...nodes.map((n, i) => (n.card ? heights[i] : 0)));
-    const botH = Math.max(0, ...nodes.map((n, i) => (n.card ? 0 : heights[i])));
-    const rowY = topH + GAP; // where the bottom row starts
+    const rand = makeRandom(SEED);
+
+    // pick a random top position for every node
+    const tops = [];
+    const centers = []; // where each line connects
+    nodes.forEach((node, i) => {
+      let top = 0;
+      let center = 0;
+      for (let tries = 0; tries < 30; tries++) {
+        top = Math.round(rand() * RANGE);
+        center = node.card ? top + heights[i] / 2 : top + DOT / 2;
+        if (i === 0 || Math.abs(center - centers[i - 1]) >= MIN_JUMP) break;
+      }
+      tops.push(top);
+      centers.push(center);
+    });
 
     const width = PAD * 2 + (count - 1) * STEP + NODE_W;
-    const height = rowY + botH + 10;
+    const height = Math.max(...nodes.map((n, i) => tops[i] + heights[i])) + 10;
     track.style.width = `${width}px`;
     track.style.height = `${height}px`;
 
-    // place every node and remember where its line connects
     const points = nodes.map((node, i) => {
       const x = PAD + i * STEP;
       node.el.style.left = `${x}px`;
-      node.el.style.top = `${node.card ? topH - heights[i] : rowY}px`;
-      return {
-        x: x + NODE_W / 2,
-        y: node.card ? topH + 14 : rowY + DOT / 2, // under a card / center of a circle
-      };
+      node.el.style.top = `${tops[i]}px`;
+      return { x: x + NODE_W / 2, y: centers[i] };
     });
 
-    // draw the diagonal lines
+    // ---------- dashed, moving lines ----------
     svg.setAttribute('width', width);
     svg.setAttribute('height', height);
     svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
     svg.replaceChildren();
 
+    const defs = document.createElementNS(SVG_NS, 'defs');
+    svg.appendChild(defs);
+
     for (let i = 0; i < count - 1; i++) {
       const a = points[i];
       const b = points[i + 1];
+      const d = `M${a.x} ${a.y} L${b.x} ${b.y}`;
+
+      // a hidden solid line inside a mask: it "draws itself" and uncovers the dashed line
+      const mask = document.createElementNS(SVG_NS, 'mask');
+      mask.setAttribute('id', `j-mask-${i}`);
+      mask.setAttribute('maskUnits', 'userSpaceOnUse');
+      mask.setAttribute('x', 0);
+      mask.setAttribute('y', 0);
+      mask.setAttribute('width', width);
+      mask.setAttribute('height', height);
+
+      const reveal = document.createElementNS(SVG_NS, 'path');
+      reveal.setAttribute('d', d);
+      reveal.setAttribute('pathLength', '1');
+      reveal.setAttribute('class', 'j-reveal');
+      reveal.style.transitionDelay = `${i * 0.18 + 0.1}s`;
+      mask.appendChild(reveal);
+      defs.appendChild(mask);
+
+      // the visible dashed line
       const line = document.createElementNS(SVG_NS, 'path');
-      line.setAttribute('d', `M${a.x} ${a.y} L${b.x} ${b.y}`);
-      line.setAttribute('pathLength', '1');
+      line.setAttribute('d', d);
       line.setAttribute('class', 'j-line');
+      line.setAttribute('mask', `url(#j-mask-${i})`);
       line.style.stroke = journey[i + 1].color || 'var(--accent)';
-      line.style.transitionDelay = `${i * 0.18 + 0.1}s`;
       svg.appendChild(line);
     }
-
-    // small pin under every photo card
-    nodes.forEach((node, i) => {
-      if (!node.card) return;
-      const pin = document.createElementNS(SVG_NS, 'circle');
-      pin.setAttribute('cx', points[i].x);
-      pin.setAttribute('cy', points[i].y);
-      pin.setAttribute('r', 5);
-      pin.setAttribute('class', 'j-pin');
-      pin.style.fill = journey[i].color || 'var(--accent)';
-      pin.style.transitionDelay = `${i * 0.18}s`;
-      svg.appendChild(pin);
-    });
   }
 
   layout();

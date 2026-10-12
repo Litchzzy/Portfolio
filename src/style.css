@@ -337,3 +337,21 @@ p  { font-size: clamp(0.9rem, 2vw, 1.2rem); max-width: 90vw; font-weight: 300; }
   color: var(--accent);
   text-decoration: none;
 }
+
+/* no highlighting with click-and-drag, no dragging pictures */
+body {
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+
+img {
+  -webkit-user-drag: none;
+}
+
+/* the contact form must still be typeable and selectable */
+input,
+textarea {
+  -webkit-user-select: text;
+  user-select: text;
+}

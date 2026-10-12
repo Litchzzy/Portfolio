@@ -12,6 +12,7 @@ import { initAbout } from './components/about.js';
 import { initContact } from './components/contact.js';
 import { initEffects } from './components/effects.js';
 import { initJourney } from './components/journey.js';
+import './lightTheme.css';
 
 startRenderLoop();
 initHeroTimeline();

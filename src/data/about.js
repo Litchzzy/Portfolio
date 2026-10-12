@@ -17,7 +17,7 @@ export const about = {
 
   // type \n to start a new paragraph
   bio:
-    'I\'m a 17y.o, love for Design and Development.\n',
+  'At 17, I\'m exploring the world of design and development, turning curiosity into creativity and ideas into reality. Whether I\'m crafting an interface or writing code, I love the process of creating something from scratch and bringing my imagination to life.\n',
 
   // the green "available" badge on your photo (set available: false to hide it)
   available: true,

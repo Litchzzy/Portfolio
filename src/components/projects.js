@@ -1,6 +1,7 @@
 import { gsap } from 'gsap';
 import { projects } from '../data/projects.js';
 import { openProject } from './projectModal.js';
+import { applyAutoColors } from '../utils/dominantColor.js';
 import '../projectsMore.css';
 import '../projectsLayout.css';
 
@@ -158,6 +159,11 @@ export function renderProjects() {
   }
 
   update(false);
+
+  // card colors from the pictures (the popup reads the same color when it opens)
+  applyAutoColors(projects, (i, color) => {
+    cards[i].style.setProperty('--card-color', color);
+  });
 
   // ---------- Click a card -> open the detail popup ----------
   grid.addEventListener('click', (e) => {

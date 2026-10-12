@@ -1,7 +1,10 @@
+import { gsap } from 'gsap';
 import { projects } from '../data/projects.js';
 import '../projectModal.css';
 
 const AUTO_MS = 4000; // time between automatic image swaps (milliseconds)
+const DOT_WINDOW = 7; // how many dots are shown at once when a project has many images
+const DOT_STEP = 18;  // one dot (8px) + the gap (10px). Must match projectModal.css
 const LAYOUTS = ['left', 'right', 'top', 'bottom'];
 
 const chevron = `<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 15 12 9 18 15"/></svg>`;
@@ -14,13 +17,22 @@ let isOpen = false;
 let swapping = false;
 
 let imgs = [];
-let imgIndex = 0;
+let slideEls = [];
+const slide = { pos: 0 }; // float: 1.4 = between image 1 and image 2, so dragging is continuous
 let timer = null;
 
 let dragging = false;
 let dragStartX = 0;
+let dragStartPos = 0;
 let dragDX = 0;
+let lastX = 0;
+let lastT = 0;
+let velocity = 0;
 let justDragged = false;
+
+const mod = (v, n) => ((v % n) + n) % n;
+const wrap = (v, n) => mod(v + n / 2, n) - n / 2; // shortest distance around the loop
+const clamp = (v, min, max) => Math.min(max, Math.max(min, v));
 
 // ---------- Date: 'YYYY-MM-DD' or 'YYYY-MM' is formatted nicely, empty = today, anything else is shown as typed ----------
 export function formatDate(value) {
@@ -38,6 +50,71 @@ export function formatDate(value) {
     }
   }
   return date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+}
+
+// ---------- Slider: every picture sits side by side and slides with transform ----------
+function layoutSlides() {
+  const n = imgs.length;
+
+  slideEls.forEach((el, k) => {
+    const d = n > 1 ? wrap(k - slide.pos, n) : 0; // distance from the center, in "pictures"
+    const near = Math.abs(d) < 0.999;
+    el.style.visibility = near ? 'visible' : 'hidden';
+    // only the pictures on screen get the fast GPU transform (matters with 79 pictures)
+    el.style.transform = near ? `translate3d(${d * 100}%, 0, 0)` : `translateX(${d * 100}%)`;
+  });
+
+  const idx = n ? mod(Math.round(slide.pos), n) : 0;
+  const dots = dotsEl.querySelectorAll('.pm-dot');
+  dots.forEach((dot, k) => dot.classList.toggle('active', k === idx));
+
+  // many pictures: only a small window of dots is visible, and it slides along with you
+  if (dotsEl.classList.contains('pm-dots-many')) {
+    const start = clamp(idx - Math.floor(DOT_WINDOW / 2), 0, n - DOT_WINDOW);
+    dotsEl.querySelector('.pm-dots-track').style.transform = `translateX(${-start * DOT_STEP}px)`;
+    dots.forEach((dot, k) => {
+      const rel = k - start;
+      // the dots at the two edges shrink when there are more dots beyond them
+      dot.classList.toggle(
+        'small',
+        (rel === 0 && start > 0) || (rel === DOT_WINDOW - 1 && start < n - DOT_WINDOW)
+      );
+    });
+  }
+}
+
+function goTo(target) {
+  gsap.to(slide, {
+    pos: target,
+    duration: 0.7,
+    ease: 'power3.out',
+    overwrite: true,
+    onUpdate: layoutSlides,
+    onComplete: () => {
+      slide.pos = mod(slide.pos, imgs.length); // keep the number small (looks identical)
+      layoutSlides();
+    },
+  });
+  startTimer();
+}
+
+// go to picture number i by the SHORTEST way around the loop
+function goToIndex(i) {
+  const base = Math.round(slide.pos);
+  goTo(base + wrap(i - base, imgs.length));
+}
+
+// ---------- Auto-swipe ----------
+function stopTimer() {
+  clearInterval(timer);
+  timer = null;
+}
+
+function startTimer() {
+  stopTimer();
+  if (isOpen && imgs.length > 1) {
+    timer = setInterval(() => goTo(Math.round(slide.pos) + 1), AUTO_MS);
+  }
 }
 
 // ---------- Build the popup once ----------
@@ -85,7 +162,7 @@ function build() {
   // image dots
   dotsEl.addEventListener('click', (e) => {
     const dot = e.target.closest('.pm-dot');
-    if (dot) showImage(Number(dot.dataset.i));
+    if (dot) goToIndex(Number(dot.dataset.i));
   });
 
   // keyboard
@@ -96,21 +173,37 @@ function build() {
     if (e.key === 'ArrowLeft') openItem(current - 1);
   });
 
-  // ---------- Drag the images to swap ----------
+  // ---------- Drag the images: they follow your finger / mouse ----------
   gallery.addEventListener('pointerdown', (e) => {
     if (imgs.length < 2 || e.target.closest('.pm-dot')) return;
+    if (e.pointerType === 'mouse' && e.button !== 0) return;
+
     dragging = true;
-    dragStartX = e.clientX;
+    stopTimer();
+    gsap.killTweensOf(slide);
+    slide.pos = mod(slide.pos, imgs.length);
+
+    dragStartPos = slide.pos;
+    dragStartX = lastX = e.clientX;
+    lastT = performance.now();
+    velocity = 0;
     dragDX = 0;
     gallery.classList.add('dragging');
-    stopTimer();
   });
 
   window.addEventListener('pointermove', (e) => {
     if (!dragging) return;
+
     dragDX = e.clientX - dragStartX;
-    const active = slidesEl.querySelector('.pm-slide.active');
-    if (active) active.style.transform = `translateX(${dragDX * 0.6}px)`;
+
+    const now = performance.now();
+    const dt = now - lastT;
+    if (dt > 0) velocity = (e.clientX - lastX) / dt; // px per ms
+    lastX = e.clientX;
+    lastT = now;
+
+    slide.pos = dragStartPos - dragDX / gallery.offsetWidth;
+    layoutSlides();
   });
 
   function endDrag() {
@@ -123,50 +216,14 @@ function build() {
       setTimeout(() => { justDragged = false; }, 60);
     }
 
-    const threshold = 60;
-    if (dragDX < -threshold) {
-      showImage(imgIndex + 1);
-    } else if (dragDX > threshold) {
-      showImage(imgIndex - 1);
-    } else {
-      const active = slidesEl.querySelector('.pm-slide.active');
-      if (active) active.style.transform = '';
-      startTimer();
-    }
+    // a quick flick moves it further, but never more than one picture per swipe
+    const base = Math.round(dragStartPos);
+    const projected = slide.pos - (velocity * 180) / gallery.offsetWidth;
+    goTo(clamp(Math.round(projected), base - 1, base + 1));
   }
 
   window.addEventListener('pointerup', endDrag);
   window.addEventListener('pointercancel', endDrag);
-}
-
-// ---------- Auto-swipe ----------
-function stopTimer() {
-  clearInterval(timer);
-  timer = null;
-}
-
-function startTimer() {
-  stopTimer();
-  if (isOpen && imgs.length > 1) {
-    timer = setInterval(() => showImage(imgIndex + 1), AUTO_MS);
-  }
-}
-
-function showImage(n) {
-  if (imgs.length < 2) return;
-  imgIndex = (n + imgs.length) % imgs.length;
-
-  slidesEl.querySelectorAll('.pm-slide').forEach((slide, k) => {
-    const active = k === imgIndex;
-    slide.classList.toggle('active', active);
-    if (active) slide.style.transform = '';
-  });
-
-  dotsEl.querySelectorAll('.pm-dot').forEach((dot, k) => {
-    dot.classList.toggle('active', k === imgIndex);
-  });
-
-  startTimer();
 }
 
 // ---------- Fill the popup with one item ----------
@@ -181,23 +238,32 @@ function render(index) {
   panel.className = `pm-panel pm-${layout}`;
 
   imgs = p.images && p.images.length ? p.images : p.image ? [p.image] : [];
-  imgIndex = 0;
 
   slidesEl.innerHTML = imgs.length
     ? imgs
         .map(
           (src, k) =>
-            `<img class="pm-slide${k === 0 ? ' active' : ''}" src="${src}" alt="${p.title} image ${k + 1}" draggable="false" />`
+            `<img class="pm-slide" src="${src}" alt="${p.title} image ${k + 1}" draggable="false" decoding="async" loading="${k === 0 ? 'eager' : 'lazy'}" />`
         )
         .join('')
     : `<div class="pm-empty">${p.title.charAt(0)}</div>`;
 
+  slideEls = [...slidesEl.querySelectorAll('.pm-slide')];
+
+  // more than DOT_WINDOW pictures = the sliding window of dots
+  dotsEl.classList.toggle('pm-dots-many', imgs.length > DOT_WINDOW);
+
   dotsEl.innerHTML =
     imgs.length > 1
-      ? imgs.map((_, k) => `<button class="pm-dot${k === 0 ? ' active' : ''}" data-i="${k}" aria-label="Image ${k + 1}"></button>`).join('')
+      ? `<div class="pm-dots-track">${imgs
+          .map((_, k) => `<button class="pm-dot${k === 0 ? ' active' : ''}" data-i="${k}" aria-label="Image ${k + 1}"></button>`)
+          .join('')}</div>`
       : '';
-
   gallery.classList.toggle('pm-multi', imgs.length > 1);
+
+  gsap.killTweensOf(slide);
+  slide.pos = 0;
+  layoutSlides();
 
   const paragraphs = (p.description || '')
     .split(/\n+/)
@@ -231,6 +297,7 @@ function openItem(index, list) {
   if (isOpen) {
     if (swapping) return;
     swapping = true;
+    stopTimer();
     overlay.classList.add('swap');
     setTimeout(() => {
       render(next);
@@ -257,6 +324,7 @@ export function closeProject() {
   if (!isOpen) return;
   isOpen = false;
   stopTimer();
+  gsap.killTweensOf(slide);
   overlay.classList.remove('open');
   overlay.setAttribute('aria-hidden', 'true');
   document.body.classList.remove('no-scroll');

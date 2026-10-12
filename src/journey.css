@@ -57,13 +57,31 @@
   overflow: visible;
 }
 
+/* the dashed line that keeps moving */
 .j-line {
   fill: none;
   stroke-width: 2.5;
   stroke-opacity: 0.9;
+  stroke-dasharray: 9 9; /* dash length, gap length. Change both for longer/shorter dashes */
+  animation: jFlow 0.9s linear infinite; /* 0.9s = speed. Smaller number = faster */
+}
+
+@keyframes jFlow {
+  to { stroke-dashoffset: -18; } /* must equal dash + gap (9 + 9) */
+}
+
+/* invisible line inside the mask that draws the dashed line in when you scroll here */
+.j-reveal {
+  fill: none;
+  stroke: #fff;
+  stroke-width: 10;
   stroke-dasharray: 1 1;
   stroke-dashoffset: 1;
   transition: stroke-dashoffset 0.6s ease;
+}
+
+.journey-track.visible .j-reveal {
+  stroke-dashoffset: 0;
 }
 
 .journey-track.visible .j-line {
@@ -111,6 +129,13 @@
   opacity: 0.6;
 }
 
+/* soft halo so a dashed line never cuts through the text */
+.j-dot h3,
+.j-dot p,
+.j-date {
+  text-shadow: 0 0 6px var(--bg), 0 0 12px var(--bg);
+}
+
 /* ---------- Photo card ---------- */
 .j-card .j-date {
   margin-bottom: 0.5rem;
@@ -120,7 +145,7 @@
   text-align: left;
   border-radius: 16px;
   overflow: hidden;
-  background: var(--card-bg, rgba(28, 28, 28, 0.78));
+  background: linear-gradient(var(--card-bg, rgba(28, 28, 28, 0.78)), var(--card-bg, rgba(28, 28, 28, 0.78))), var(--bg);
   border: 1px solid var(--card-border, rgba(255, 255, 255, 0.1));
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
   transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.4s ease, border-color 0.3s ease;
@@ -229,5 +254,6 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .j-circle { animation: none; }
+  .j-circle,
+  .j-line { animation: none; }
 }
