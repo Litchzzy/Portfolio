@@ -42,8 +42,9 @@ export function initHeroCarousel() {
   const wrap = (v) => mod(v + n / 2, n) - n / 2;
 
   // how far from the center a card can be before it has fully faded out
-  const limit = loop ? Math.min(2.6, n / 2) : 2.6;
-  const fadeWidth = loop ? Math.min(0.8, Math.max(limit - 1, 0.3)) : 0.8;
+  const VISIBLE = 1.6; // 1.6 = the center card plus one on each side. Cards beyond that fade out while sliding.
+  const limit = loop ? Math.min(VISIBLE, n / 2) : VISIBLE;
+  const fadeWidth = 0.6;
 
   // ---------- Build DOM ----------
   root.innerHTML = `
@@ -74,7 +75,7 @@ export function initHeroCarousel() {
 
   // state.pos is a FLOAT (e.g. 1.4 = between card 1 and 2) so dragging feels continuous
   const state = { pos: 0 };
-  const spacing = () => cards[0].offsetWidth * 0.75;
+  const spacing = () => cards[0].offsetWidth * 0.85;
   const current = () =>
     loop ? mod(Math.round(state.pos), n) : clamp(Math.round(state.pos), 0, last);
 

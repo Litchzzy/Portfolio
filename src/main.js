@@ -1,4 +1,5 @@
 import './style.css';
+import './navbar.css';
 import { startRenderLoop } from './three/scene.js';
 import { initHeroTimeline } from './three/heroTimeline.js';
 import { renderProjects } from './components/projects.js';
@@ -12,6 +13,8 @@ import { initAbout } from './components/about.js';
 import { initContact } from './components/contact.js';
 import { initEffects } from './components/effects.js';
 import { initJourney } from './components/journey.js';
+import { initLoader } from './components/loader.js';
+import { initCore } from './components/core.js';
 import './lightTheme.css';
 
 startRenderLoop();
@@ -25,3 +28,5 @@ initEffects();
 initJourney();
 initHeroCarousel();
 initTheme();
+initLoader();
+initCore();

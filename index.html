@@ -10,6 +10,8 @@
     <div class="nav-links">
       <a href="#hero" class="nav-link" data-section="hero">Home</a>
       <span class="nav-divider"></span>
+      <a href="#core" class="nav-link" data-section="core">Core</a>
+      <span class="nav-divider"></span>
       <a href="#about" class="nav-link" data-section="about">About</a>
       <span class="nav-divider"></span>
       <a href="#journey" class="nav-link" data-section="journey">Journey</a>
@@ -27,6 +29,8 @@
   <div class="side-menu" id="sideMenu">
     <div class="side-menu-links">
       <a href="#hero" class="side-link" data-section="hero">Home</a>
+      <span class="side-divider"></span>
+      <a href="#core" class="nav-link" data-section="core">Core</a>
       <span class="side-divider"></span>
       <a href="#about" class="side-link" data-section="about">About</a>
       <span class="side-divider"></span>
@@ -46,11 +50,30 @@
 
   <div id="app">
     <section class="panel" id="hero">
-      <div class="hero-bg"></div>
-      <h1>Locth</h1>
-      <p>Everything starts from a single idea</p>
-      <div class="hero-carousel" id="heroCarousel"></div>
+    <div class="hero-bg"></div>
+
+   <div class="hero-inner">
+    <div class="hero-text">
+      <h1 class="hero-title">Locth</h1>
+      <p class="hero-desc">
+        Everything starts from a single idea.
+      </p>
+    </div>
+
+    <div class="hero-carousel" id="heroCarousel"></div>
+  </div>
+</section>
+
+    <section class="panel panel-core" id="core">
+      <canvas class="core-canvas" id="coreCanvas"></canvas>
+      <svg class="core-lines" id="coreLines"></svg>
+      <div class="core-labels" id="coreLabels"></div>
+      <div class="core-head">
+        <h1 class="hero-title">IMPERFECT CUBE</h1>
+        <p class="hero-desc">Bring Imagination to Life</p>
+      </div>
     </section>
+
 <section class="panel panel-about" id="about">
   <div class="ab-wrap" id="aboutRoot"></div>
 </section>

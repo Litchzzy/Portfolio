@@ -1,0 +1,67 @@
+/* ---------- Links pushed to the right, next to the hamburger ---------- */
+.nav-links {
+  margin-left: auto;
+  margin-right: 1.6rem;
+  gap: 0.4rem;
+}
+
+/* the | dividers clash with the bracket look, so they are hidden */
+.nav-divider {
+  display: none;
+}
+
+/* ---------- Link text: spaced caps ---------- */
+.nav-link {
+  padding: 0.6rem calc(1.4rem - 0.25em) 0.6rem 1.4rem; /* the calc cancels the extra space letter-spacing adds after the last letter */
+  font-size: 0.78rem;
+  font-weight: 400;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  opacity: 0.6;
+  transition: opacity 0.35s ease, text-shadow 0.35s ease;
+}
+
+/* remove the old underline */
+.nav-link::after {
+  display: none;
+}
+
+/* ---------- Corner brackets (8 little lines in one element) ---------- */
+.nav-link::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(var(--accent), var(--accent)) top left / 10px 1.5px no-repeat,
+    linear-gradient(var(--accent), var(--accent)) top left / 1.5px 10px no-repeat,
+    linear-gradient(var(--accent), var(--accent)) top right / 10px 1.5px no-repeat,
+    linear-gradient(var(--accent), var(--accent)) top right / 1.5px 10px no-repeat,
+    linear-gradient(var(--accent), var(--accent)) bottom left / 10px 1.5px no-repeat,
+    linear-gradient(var(--accent), var(--accent)) bottom left / 1.5px 10px no-repeat,
+    linear-gradient(var(--accent), var(--accent)) bottom right / 10px 1.5px no-repeat,
+    linear-gradient(var(--accent), var(--accent)) bottom right / 1.5px 10px no-repeat;
+
+  /* OUT state: slightly bigger and invisible */
+  opacity: 0;
+  transform: scale(1.35);
+  transition: opacity 0.35s ease, transform 0.45s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+/* IN state: brackets fade in while closing around the text */
+.nav-link:hover::before,
+.nav-link.active::before {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.nav-link:hover,
+.nav-link.active {
+  opacity: 1;
+}
+
+/* no bold on active (bold changes the width and makes the links jump), a soft glow instead */
+.nav-link.active {
+  font-weight: 400;
+  text-shadow: 0 0 12px color-mix(in srgb, var(--accent) 60%, transparent);
+}

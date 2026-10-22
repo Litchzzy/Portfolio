@@ -11,7 +11,7 @@ function initScrollDots() {
   if (!sections.length) return;
 
   // names shown when you hover a dot (change them here)
-  const labels = { hero: 'Home', about: 'About', journey: 'Journey', projects: 'Projects', contact: 'Contact' };
+  const labels = { hero: 'Home', core: 'Core', about: 'About', journey: 'Journey', projects: 'Projects', contact: 'Contact' };
   const labelOf = (id) => labels[id] || id;
 
   const nav = document.createElement('nav');
