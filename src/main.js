@@ -15,7 +15,10 @@ import { initEffects } from './components/effects.js';
 import { initJourney } from './components/journey.js';
 import { initLoader } from './components/loader.js';
 import { initCore } from './components/core.js';
+import { initHeroIntro } from './components/heroIntro.js';
 import './lightTheme.css';
+
+const carousel = initHeroCarousel();
 
 startRenderLoop();
 initHeroTimeline();
@@ -30,3 +33,4 @@ initHeroCarousel();
 initTheme();
 initLoader();
 initCore();
+initHeroIntro(carousel);

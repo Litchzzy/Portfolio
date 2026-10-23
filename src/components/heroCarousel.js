@@ -75,13 +75,14 @@ export function initHeroCarousel() {
 
   // state.pos is a FLOAT (e.g. 1.4 = between card 1 and 2) so dragging feels continuous
   const state = { pos: 0 };
+  const intro = { spread: 1 }; // 0 = all cards stacked in the middle, 1 = normal (animated by heroIntro.js)
   const spacing = () => cards[0].offsetWidth * 0.85;
   const current = () =>
     loop ? mod(Math.round(state.pos), n) : clamp(Math.round(state.pos), 0, last);
 
   // ---------- Layout: position every card based on its distance from pos ----------
   function layout() {
-    const gap = spacing();
+    const gap = spacing() * intro.spread;
 
     cards.forEach((card, i) => {
       const d = loop ? wrap(i - state.pos) : i - state.pos;
@@ -206,8 +207,8 @@ export function initHeroCarousel() {
   window.addEventListener('pointercancel', endDrag);
 
   window.addEventListener('resize', layout);
-
+  
   // ---------- Intro ----------
   layout();
-  gsap.from(root, { opacity: 0, y: 40, duration: 1, delay: 0.3, ease: 'power3.out' });
+  return { layout, intro };
 }

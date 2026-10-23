@@ -1,5 +1,6 @@
 import { gsap } from 'gsap';
 import { loader } from '../data/loader.js';
+import { markReady } from '../utils/ready.js';
 import '../loader.css';
 
 // ====== TIMING: when each part starts (seconds). Change these to re-order the animation ======
@@ -86,11 +87,13 @@ function formRect(tl, rect, line, at) {
 }
 
 export function initLoader() {
-  if (!loader.enabled) return;
+  const finish = () => { document.getElementById('preload')?.remove(); markReady(); };
+
+  if (!loader.enabled) { finish(); return; }
 
   if (loader.oncePerSession) {
     try {
-      if (sessionStorage.getItem('loaderSeen')) return;
+      if (sessionStorage.getItem('loaderSeen')) { finish(); return; }
       sessionStorage.setItem('loaderSeen', '1');
     } catch {}
   }
@@ -140,6 +143,7 @@ export function initLoader() {
     <div class="ld-crt"></div>
   `;
   document.body.appendChild(el);
+  document.getElementById('preload')?.remove(); // the loading screen takes over from the black cover
   document.body.classList.add('no-scroll'); // no scrolling while loading
 
   const $ = (s) => el.querySelector(s);
@@ -370,6 +374,7 @@ export function initLoader() {
         glitchLayer.remove();
         el.remove();
         document.body.classList.remove('no-scroll');
+        markReady();   // <- add this line
       },
     });
 

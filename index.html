@@ -1,6 +1,22 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="color-scheme" content="dark" />
+  <style>
+    body { margin: 0; }
+    #preload { position: fixed; inset: 0; z-index: 2000; background: #000; }
+  </style>
+  <script>
+    try { document.documentElement.setAttribute('data-theme', localStorage.getItem('theme') || 'dark'); } catch (e) {}
+    setTimeout(function () { var p = document.getElementById('preload'); if (p) p.remove(); }, 10000); // safety
+  </script>
+  <noscript><style>#preload { display: none; }</style></noscript>
+</head>
+
 <body>
+  <div id="preload"></div>
   <nav id="navbar">
     <a href="#hero" class="nav-logo" id="navLogo">
       <img class="logo-dark" src="/src/data/Images/Logo.png" alt="Locth logo" />
