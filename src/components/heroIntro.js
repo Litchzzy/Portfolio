@@ -30,9 +30,9 @@ export function initHeroIntro(carousel) {
 
   // remember the normal opacity of the nav items, then hide everything (the loading screen is covering it anyway)
   const navTargets = navItems.map((el) => parseFloat(getComputedStyle(el).opacity) || 1);
-  gsap.set(chars, { yPercent: 90, opacity: 0, filter: 'blur(10px)' });
-  if (desc) gsap.set(desc, { y: 24, opacity: 0, filter: 'blur(6px)' });
-  if (carouselEl) gsap.set(carouselEl, { opacity: 0, x: 140, filter: 'blur(12px)' });
+  gsap.set(chars, { yPercent: 90, opacity: 0 });
+  if (desc) gsap.set(desc, { y: 24, opacity: 0 });
+  if (carouselEl) gsap.set(carouselEl, { opacity: 0, x: 140 });
   gsap.set(bgs, { scale: 1.15 });
   gsap.set(navItems, { opacity: 0, y: -14 });
   if (dots) gsap.set(dots, { opacity: 0 });
@@ -48,11 +48,11 @@ export function initHeroIntro(carousel) {
     tl.to(bgs, { scale: 1, duration: 2.6, ease: 'power2.out' }, 0)
 
       // text side
-      .to(chars, { yPercent: 0, opacity: 1, filter: 'blur(0px)', duration: 1.0, stagger: 0.09 }, 0.15)
-      .to(desc, { y: 0, opacity: 1, filter: 'blur(0px)', duration: 1.1 }, 0.95)
+      .to(chars, { yPercent: 0, opacity: 1, duration: 1.0, stagger: 0.09 }, 0.15)
+      .to(desc, { y: 0, opacity: 1, duration: 1.1 }, 0.95)
 
       // carousel side (starts later and moves differently on purpose)
-      .to(carouselEl, { opacity: 1, x: 0, filter: 'blur(0px)', duration: 1.5, ease: 'power4.out' }, 0.55);
+      .to(carouselEl, { opacity: 1, x: 0, duration: 1.5, ease: 'power4.out' }, 0.55);
 
     if (intro && layout) {
       tl.to(intro, {
@@ -68,8 +68,5 @@ export function initHeroIntro(carousel) {
       }, 1.0);
 
     if (dots) tl.to(dots, { opacity: 1, duration: 0.8 }, 1.6);
-
-    // blur filters are only needed during the animation
-    tl.add(() => gsap.set([chars, desc, carouselEl], { clearProps: 'filter' }));
   }
 }
